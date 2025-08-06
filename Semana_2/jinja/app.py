@@ -8,10 +8,19 @@ def index():
     return render_template('index.html', nome_usuario = usuario)
 
 @app.route('/perfil/<nome>')
-def perfil(nome):
-    logado = True
-    usuario = nome
+def perfil(nome=None):
+    logado = nome != None
+
+    usuario = ''
+    if logado:
+        usuario = nome
     return render_template('perfil.html', logado = logado, nome_usuario = usuario )
+
+@app.route('/lista_produtos')
+def lista_produtos():
+    produtos = ['Cadeiras', 'Sofa', 'Cama']
+    return render_template('produtos.html', lista=produtos)
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
