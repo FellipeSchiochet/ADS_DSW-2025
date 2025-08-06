@@ -39,7 +39,7 @@ def exercicio3(nome=None) :
     return render_template('exercicio3.html', usuario_logado=logado, nome_usuario=nome)
 
 # --- Exercicio 4: Herança de Templates ---
-@app.route('sobre')
+@app.route('/sobre')
 def exercicio4():
     """
     Renderiza a página 'Sobre', que herda o layout base.
