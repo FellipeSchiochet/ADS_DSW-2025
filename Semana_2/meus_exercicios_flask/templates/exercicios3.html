@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercicio 3 - Perfil</title>
+</head>
+<body>
+    <h1>Página de Perfil</h1>
+    {% if usuario_logado %}
+        <p>Bem-Vindo de volta, {{ nome_usuario }}</p>
+        <p>Aproveite o coneteúdo exclusivo para membros.</p>
+    {% else %}
+    <p>Você não está logado.</p>
+    <p>Por favor, <a href="#">Faça o login</a> para ver esta página.</p>
+    {% endif %}
+</body>
+</html>
