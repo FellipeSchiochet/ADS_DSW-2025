@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block  %}
+    <h1>Login</h1>
+    <form action="{{ ulr_for('login') }}" method="POST">
+        <p>Usuàrio: <input type="text" name="usuario"></p>
+        <p>Senha: <input type="password" name="senha"></p>
+        <p><input type="submit" value="Entrar"></p>
+        </form>
+
+
+{% endblock  %}
+    
+
