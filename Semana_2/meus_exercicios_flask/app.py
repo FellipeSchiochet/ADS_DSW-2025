@@ -10,7 +10,7 @@ def exercicio1():
     Ela passa uma variável 'nome_usuario' para o template 'exercicio1.html'
     """
     nome_usuario = "Maria"
-    return render_template('exercicio1.html', nome_usuario=nome_usuario)
+    return render_template('exercicios1.html', nome_usuario=nome_usuario)
 
 # --- Exercício 2: Listando Itens ---
 @app.route('/cursos')
@@ -25,7 +25,7 @@ def exercicio2():
         "Introdução a Machine Learning",
         "Banco de Dados SQL"
     ]
-    return render_template('exercicio2.html', cursos=lista_de_cursos)
+    return render_template('exercicios2.html', cursos=lista_de_cursos)
 
 # --- Exercício 3: Usando Condicionais ---
 @app.route('/perfil/<nome>')
@@ -36,7 +36,7 @@ def exercicio3(nome=None) :
     Ela simula um status de login e passa para o template 'exercicio3.html'.
     """
     logado = nome is not None
-    return render_template('exercicio3.html', usuario_logado=logado, nome_usuario=nome)
+    return render_template('exercicios3.html', usuario_logado=logado, nome_usuario=nome)
 
 # --- Exercicio 4: Herança de Templates ---
 @app.route('/sobre')
@@ -50,4 +50,4 @@ def exercicio4():
 # --- Bloco para rodar a aplicação ---
 if __name__ == '__main__':
     #O modo debug reinicia o servido automaticamente a cada alteração no código.
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5001, debug=True)
