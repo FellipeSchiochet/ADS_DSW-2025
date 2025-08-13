@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Sucesso</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <p>Tarefa <b>{{ tarefa }}</b> cadastrada com sucesso!</p>
+        <a href="{{ url_for('voltar') }}">Voltar</a>
+    </div>
+</body>
+</html>
