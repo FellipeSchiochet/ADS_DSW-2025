@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formulário com Flask-WTF</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <h1>Cadastro Didático</h1>
+
+    {% with messages=get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+            <div>{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form action="" method="post" novalidate>
+       <!-- Token CSRF -->
+        {{ form.hidden_tag() }}
+
+        <!-- Label (html) -->
+        {{ form.nome.label }}
+
+        <!-- Input (html) -->
+        {{ form.nome(class="form-control", placeholder="Digite seu nome") }}
+
+        <!-- Tratamento de erros (html) -->
+         {% if form.nome.erros %}
+            {% for error in form.nome.erros %}
+                <div>{{ error }}</div>
+            {% endfor %}
+         {% endif %}
+
+        <!-- Label (html) -->
+        {{ form.email.label }}
+
+        <!-- Input (html) -->
+        {{ form.email(class="form-control", placeholder="exemplo@dominio.com") }}
+
+        <!-- Tratamento de erros (html) -->
+         {% if form.email.erros %}
+            {% for error in form.email.erros %}
+                <div>{{ error }}</div>
+            {% endfor %}
+         {% endif %}
+
+         <!-- Botão enviar submit (html)-->
+
+         {{ form.submit(class="submit-btn") }}
+
+
+
+    </form>
+
+  </body>
+</html>
