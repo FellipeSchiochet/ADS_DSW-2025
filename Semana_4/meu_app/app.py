@@ -1,101 +1,111 @@
-# Importa as classes e funções necessárias
+# Importa as classes e funções necessárias do Flask e WTForms
 from flask import Flask, render_template, flash, redirect, url_for
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired, Email
+from wtforms import StringField, SubmitField, PasswordField, TextAreaField, BooleanField
+from wtforms.validators import DataRequired, Email, Length, EqualTo
 
-# 1. CONFIGURAÇÃO DA APLICAÇÃO
-app = Flask(__name__)
-
-# A SECRET_KEY é crucial para a proteção CSRF. 
-# Em um projeto real, isso deve ser uma string complexa e mantida em segredo.
+# --------------------------
+# CONFIGURAÇÃO DO APP
+# --------------------------
+app = Flask(__name__)  # Cria a aplicação Flask
 app.config['SECRET_KEY'] = 'uma-chave-secreta-muito-dificil-de-adivinhar'
+# A SECRET_KEY é usada pelo Flask-WTF para gerar tokens CSRF e proteger o formulário
 
-# 2. DEFINIÇÃO DA CLASSE DO FORMULÁRIO
-# Esta classe herda de FlaskForm e define a estrutura e as regras do nosso formulário.
+# --------------------------
+# FORMULÁRIO ANTIGO (simples)
+# --------------------------
 class MeuFormulario(FlaskForm):
-    """
-    Representa o formulário de contato com validação.
-    """
-    # StringField: Campo de texto.
-    # O primeiro argumento é o 'label' que aparecerá para o usuário.
-    # 'validators' é uma lista de regras. DataRequired garante que o campo não seja enviado vazio.
     nome = StringField('Nome Completo', validators=[DataRequired(message="Este campo é obrigatório.")])
-    
-    # O validor Email() checa se o texto inserido tem um formato de e-mail válido.
+    # Campo de texto para o nome, obrigatório
     email = StringField('Seu Melhor E-mail', validators=[
-        DataRequired(message="Este campo é obrigatório."), 
-        Email(message="Por favor, insira um e-mail válido.")
+        DataRequired(message="Este campo é obrigatório."),  # Não permite vazio
+        Email(message="Por favor, insira um e-mail válido.")  # Valida o formato de e-mail
     ])
-    
-    # SubmitField: Representa o botão de envio do formulário.
-    submit = SubmitField('Enviar Cadastro')
+    submit = SubmitField('Enviar Cadastro')  # Botão de envio do formulário
 
-# 3. CRIAÇÃO DAS ROTAS (VIEWS)
+# --------------------------
+# NOVO FORMULÁRIO DE REGISTRO
+# --------------------------
+class FormularioRegistro(FlaskForm):
+    nome = StringField('Nome Completo', validators=[DataRequired(message="Este campo é obrigatório.")])
+    # Campo obrigatório para nome
+    email = StringField('E-mail', validators=[
+        DataRequired(message="Este campo é obrigatório."),
+        Email(message="Insira um e-mail válido.")
+    ])
+    senha = PasswordField('Senha', validators=[
+        DataRequired(message="Senha obrigatória."),
+        Length(min=8, message="A senha deve ter pelo menos 8 caracteres.")  # Valida tamanho mínimo
+    ])
+    confirmar_senha = PasswordField('Confirmar Senha', validators=[
+        DataRequired(message="Confirme sua senha."),
+        EqualTo('senha', message="As senhas não conferem.")  # Confirma se é igual à senha
+    ])
+    biografia = TextAreaField('Biografia (opcional)')
+    # Campo opcional para escrever sobre si
+    aceitar_termos = BooleanField('Aceito os Termos de Serviço', validators=[
+        DataRequired(message="Você deve aceitar os termos para continuar.")  # Obrigatório marcar
+    ])
+    submit = SubmitField('Registrar')  # Botão de envio do registro
 
-# Rota original, com o formulário em branco
+# --------------------------
+# ROTAS EXISTENTES
+# --------------------------
+
+# Formulário simples
 @app.route('/formulario', methods=['GET', 'POST'])
 def formulario():
-    """
-    Renderiza o formulário e processa os dados enviados.
-    """
-    form = MeuFormulario()
-    if form.validate_on_submit():
+    form = MeuFormulario()  # Instancia o formulário simples
+    if form.validate_on_submit():  # Se o formulário foi enviado e válido
         nome_usuario = form.nome.data
         email_usuario = form.email.data
         flash(f'Cadastro recebido com sucesso para {nome_usuario} ({email_usuario})!', 'success')
-        return redirect(url_for('formulario'))
-        
-    return render_template('formulario.html', form=form)
+        return redirect(url_for('formulario'))  # Redireciona para a mesma página
+    return render_template('formulario.html', form=form)  # Renderiza o template
 
-# --- EXEMPLOS DE PREENCHIMENTO ---
-
-# Exemplo 1: Populando o formulário via argumentos diretos
+# Exemplo com valores pré-preenchidos por argumentos
 @app.route('/formulario/preenchido-args', methods=['GET', 'POST'])
 def formulario_com_argumentos():
-    """
-    Demonstra como popular o formulário passando os valores como argumentos
-    na sua instanciação.
-    """
-    form = MeuFormulario(nome="Fulano de Tal", email="fulano@exemplo.com")
-    
+    form = MeuFormulario(nome="Fulano de Tal", email="fulano@exemplo.com")  # Valores iniciais
     if form.validate_on_submit():
         flash(f'Dados de "{form.nome.data}" atualizados com sucesso!', 'success')
         return redirect(url_for('formulario_com_argumentos'))
-        
     return render_template('formulario.html', form=form)
 
-# Exemplo 2: Populando o formulário com um objeto
+# Exemplo com valores pré-preenchidos por objeto
 @app.route('/formulario/preenchido-obj', methods=['GET', 'POST'])
 def formulario_com_objeto():
-    """
-    Demonstra como popular o formulário a partir de um objeto,
-    simulando dados vindos de um banco de dados.
-    """
     class UsuarioMock:
         def __init__(self, nome, email):
             self.nome = nome
             self.email = email
-            
     usuario_do_banco = UsuarioMock(nome="Ciclano da Silva", email="ciclano@banco.com")
-
-    form = MeuFormulario(obj=usuario_do_banco)
-    
+    form = MeuFormulario(obj=usuario_do_banco)  # Popula formulário com dados do objeto
     if form.validate_on_submit():
         flash(f'Dados de "{form.nome.data}" atualizados com sucesso!', 'success')
         return redirect(url_for('formulario_com_objeto'))
-        
     return render_template('formulario.html', form=form)
 
+# --------------------------
+# NOVA ROTA DE REGISTRO
+# --------------------------
+@app.route('/registro', methods=['GET', 'POST'])
+def registro():
+    form = FormularioRegistro()  # Instancia o formulário de registro
+    if form.validate_on_submit():  # Se o formulário foi enviado e válido
+        flash(f"Registro realizado com sucesso para {form.nome.data} ({form.email.data})!", "success")
+        return redirect(url_for('registro'))  # Redireciona para a mesma página
+    return render_template('registro.html', form=form)  # Renderiza o template do registro
 
-# Rota principal agora renderiza um template HTML
+# --------------------------
+# ROTA PRINCIPAL
+# --------------------------
 @app.route('/')
 def index():
-    """
-    Renderiza a página inicial a partir de um arquivo de template.
-    """
-    return render_template('index.html')
+    return render_template('index.html')  # Página inicial com links para os formulários
 
-# Permite executar o app diretamente com 'python app.py'
+# --------------------------
+# EXECUÇÃO DO APP
+# --------------------------
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True)  # Executa o servidor Flask em modo debug
