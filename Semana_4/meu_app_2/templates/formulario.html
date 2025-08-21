@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exemplo Flask-WTF - {{ title }}</title>
+  </head>
+  <body>
+    <h1>{{ title }}</h1>
+    <p>
+      <a href="/">Voltar para o início</a>
+    </p>
+    <hr />
+
+    <!-- Formulário com novalidate -->
+    <form method="POST" action="" novalidate>
+      {{ form.hidden_tag() }} <!-- Proteção CSRF -->
+
+      <!-- Campo: Nome do Evento -->
+      <div>
+        {{ form.nome_evento.label }}<br />
+        {{ form.nome_evento(size=30) }}
+        {% for error in form.nome_evento.errors %}
+          <br />
+          <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+      </div>
+      <br />
+
+      <!-- Campo: Data do Evento -->
+      <div>
+        {{ form.data_evento.label }}<br />
+        {{ form.data_evento(type='date') }}
+        {% for error in form.data_evento.errors %}
+          <br />
+          <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+      </div>
+      <br />
+
+      <!-- Campo: Organizador do Evento (substitui o antigo email) -->
+      <div>
+        {{ form.organizador_evento.label }}<br />
+        {{ form.organizador_evento(size=30) }}
+        {% for error in form.organizador_evento.errors %}
+          <br />
+          <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+      </div>
+      <br />
+
+      <!-- Campo: Mensagem -->
+      <div>
+        {{ form.mensagem.label }}<br />
+        {{ form.mensagem(rows=5, cols=32) }}
+        {% for error in form.mensagem.errors %}
+          <br />
+          <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+      </div>
+      <br />
+
+      <!-- Botão Enviar -->
+      <div>{{ form.enviar() }}</div>
+    </form>
+  </body>
+</html>
