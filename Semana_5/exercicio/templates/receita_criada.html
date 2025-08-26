@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block conteudo %}
+  <h2>🍴 Receita Criada com Sucesso!</h2>
+  <p>
+    <strong>Nome:</strong> {{ nome }}
+  </p>
+  <p>
+    <strong>Ingredientes:</strong>
+  </p>
+  <pre>{{ ingredientes }}</pre>
+  <p>
+    <strong>Modo de Preparo:</strong>
+  </p>
+  <pre>{{ preparo }}</pre>
+{% endblock %}

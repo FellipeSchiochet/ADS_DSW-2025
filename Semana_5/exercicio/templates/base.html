@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Construtor de Receitas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <header>
+      <h1>Construtor de Receitas 🍳</h1>
+      <nav>
+        <a href="{{ url_for('nova_receita') }}">Nova Receita</a>
+      </nav>
+    </header>
+
+    <main>
+      {% with mensagens=get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+          {% for categoria, msg in mensagens %}
+            <p class="flash {{ categoria }}">{{ msg }}</p>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      {% block conteudo %}
+      {% endblock %}
+    </main>
+
+    <footer>
+      <p>&copy; 2025 - Sistema de Receitas</p>
+    </footer>
+  </body>
+</html>
