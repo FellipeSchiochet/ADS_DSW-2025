@@ -1,0 +1,33 @@
+<!-- templates/livros.html -->
+{% extends "base.html" %}
+
+{% block conteudo %}
+    <h2>Cadastro de Livro</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.titulo.label }}
+            {{ form.titulo() }}
+        </div>
+        <div class="form-group">
+            {{ form.ano_publicacao.label }}
+            {{ form.ano_publicacao() }}
+        </div>
+        <div class="form-group">
+            {{ form.autor.label }}
+            {{ form.autor() }}
+        </div>
+        {{ form.submit() }}
+    </form>
+
+    <h2>Lista de Livros</h2>
+    {% if livros %}
+        <ul>
+            {% for livro in livros %}
+                <li><strong>{{ livro.titulo }}</strong> ({{ livro.ano_publicacao }}) — {{ livro.autor_rel.nome }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum livro cadastrado ainda.</p>
+    {% endif %}
+{% endblock %}

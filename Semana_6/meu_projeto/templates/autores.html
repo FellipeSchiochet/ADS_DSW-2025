@@ -1,0 +1,25 @@
+<!-- templates/autores.html -->
+{% extends "base.html" %}
+
+{% block conteudo %}
+    <h2>Cadastro de Autor</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.nome.label(class="form-label") }}
+            {{ form.nome(class="form-control") }}
+        </div>
+        {{ form.submit(class="btn") }}
+    </form>
+
+    <h2>Lista de Autores</h2>
+    {% if autores %}
+        <ul>
+            {% for autor in autores %}
+                <li>{{ autor.nome }} ({{ autor.livros|length }} livro{{ 's' if autor.livros|length != 1 else '' }})</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum autor cadastrado ainda.</p>
+    {% endif %}
+{% endblock %}
