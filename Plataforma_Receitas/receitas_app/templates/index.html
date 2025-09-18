@@ -1,21 +1,182 @@
-{% extends 'base.html' %}
-{% block content %}
-    <h1>Todas as Receitas</h1>
-    <div class="card-grid">
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todas as Receitas</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .receita {
+            border: 1px solid #e1e1e1;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fff;
+        }
+        
+        .receita h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .chef {
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+        
+        .ingredientes {
+            margin-bottom: 15px;
+        }
+        
+        .ingredientes h3 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .ingredientes ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .ingredientes li {
+            padding: 5px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .instrucoes {
+            margin-top: 15px;
+        }
+        
+        .instrucoes h3 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .nav {
+            background-color: #2c3e50;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+        
+        .nav-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-brand {
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        
+        .nav-link {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        
+        .btn:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="/" class="nav-brand">Plataforma de Receitas</a>
+            <a href="/receita/nova" class="nav-link">Nova Receita</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <h1>Todas as Receitas</h1>
+        
         {% for receita in receitas %}
-        <div class="card">
+        <div class="receita">
             <h2>{{ receita.titulo }}</h2>
-            <p>Por: <a href="{{ url_for('detalhes_chef', chef_id=receita.chef.id) }}">{{ receita.chef.nome }}</a></p>
-            <h4>Ingredientes:</h4>
-            <ul>
-                {% for assoc in receita.ingredientes_associados %}
-                <li>
-                    <span>{{ assoc.ingrediente.nome|capitalize }}</span>
-                    <span>{{ assoc.quantidade }}</span>
-                </li>
-                {% endfor %}
-            </ul>
+            <p class="chef">Por: {{ receita.chef.nome }}</p>
+            
+            <div class="ingredientes">
+                <h3>Ingredientes:</h3>
+                <ul>
+                    {% for ingrediente_assoc in receita.ingredientes_associados %}
+                    <li>{{ ingrediente_assoc.ingrediente.nome }}: {{ ingrediente_assoc.quantidade }}</li>
+                    {% else %}
+                    <li>Nenhum ingrediente listado.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="instrucoes">
+                <h3>Instruções:</h3>
+                <p>{{ receita.instrucoes }}</p>
+            </div>
+        </div>
+        {% else %}
+        <div class="receita">
+            <p>Nenhuma receita cadastrada ainda.</p>
+            <a href="/receita/nova" class="btn">Criar Primeira Receita</a>
         </div>
         {% endfor %}
     </div>
-{% endblock %}
+</body>
+</html>

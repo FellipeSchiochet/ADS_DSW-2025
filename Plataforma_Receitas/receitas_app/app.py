@@ -29,8 +29,12 @@ def create_app():
     # --- Rotas ---
     @app.route('/')
     def index():
-        from models import Receita
-        receitas = Receita.query.all()
+        from models import Receita, ReceitaIngrediente
+        # Carrega todas as receitas com seus relacionamentos
+        receitas = Receita.query.options(
+            db.joinedload(Receita.chef),
+            db.joinedload(Receita.ingredientes_associados).joinedload(ReceitaIngrediente.ingrediente)
+        ).all()
         return render_template('index.html', receitas=receitas)
 
     @app.route('/receita/nova', methods=['GET', 'POST'])
