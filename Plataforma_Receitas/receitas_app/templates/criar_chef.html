@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Adicionar Novo Chef</h1>
+    <form method="POST">
+        <div class="form-group">
+            <label for="nome">Nome do Chef</label>
+            <input type="text" id="nome" name="nome" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="especialidade">Especialidade</label>
+            <input type="text" id="especialidade" name="especialidade" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="anos_experiencia">Anos de Experiência</label>
+            <input type="number" id="anos_experiencia" name="anos_experiencia" min="0" required>
+        </div>
+        
+        <button type="submit" class="btn">Salvar Chef</button>
+        <a href="{{ url_for('criar_receita') }}" class="btn">Voltar</a>
+    </form>
+{% endblock %}
