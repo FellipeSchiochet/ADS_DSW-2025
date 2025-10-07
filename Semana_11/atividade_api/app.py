@@ -1,87 +1,99 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 app = Flask(__name__)
 
-# Modelo de dados do produto
+CORS(app)
+
+# Lista de produtos de exemplo (substitui a lista de tarefas)
 produtos = [
-    {"id": 1, "nome": "Notebook Dell", "preco": 4500.00, "estoque": 10},
-    {"id": 2, "nome": "Mouse Gamer", "preco": 150.00, "estoque": 50},
-    {"id": 3, "nome": "Teclado Mecânico", "preco": 300.00, "estoque": 25}
+    {
+        'id': 1,
+        'nome': 'Camiseta Básica',
+        'preco': 29.99,
+        'estoque': 50
+    },
+    {
+        'id': 2,
+        'nome': 'Calça Jeans',
+        'preco': 79.90,
+        'estoque': 30
+    },
+    {
+        'id': 3,
+        'nome': 'Tênis Esportivo',
+        'preco': 129.99,
+        'estoque': 15
+    }
 ]
 
-# Rota de teste
-@app.route(
-    '/'
-)
-def hello_world():
-    return 'Hello, World!'
+# >>> Construção de Rotas para Produtos <<<
 
-# GET /produtos - Listar todos os produtos
-@app.route(
-    '/produtos',
-    methods=['GET']
-)
-def listar_produtos():
+# Rota para obter todos os produtos (GET /produtos)
+@app.route('/produtos', methods=['GET'])
+def obter_produtos():
     return jsonify(produtos)
 
-# GET /produtos/<id> - Obter um produto específico pelo ID
-@app.route(
-    '/produtos/<int:id>',
-    methods=['GET']
-)
-def obter_produto_por_id(id):
-    for produto in produtos:
-        if produto['id'] == id:
-            return jsonify(produto)
-    return jsonify({'mensagem': 'Produto não encontrado'}), 404
+# Rota para obter um produto específico pelo ID (GET /produtos/<int:id>)
+@app.route('/produtos/<int:produto_id>', methods=['GET'])
+def obter_produto(produto_id):
+    produto = next((p for p in produtos if p['id'] == produto_id), None)
+    if produto is None:
+        return jsonify({'erro': 'Produto não encontrado'}), 404
+    return jsonify(produto)
 
-# POST /produtos - Criar um novo produto
-@app.route(
-    '/produtos',
-    methods=['POST']
-)
+# Rota para criar um novo produto (POST /produtos)
+@app.route('/produtos', methods=['POST'])
 def criar_produto():
-    novo_produto = request.get_json()
-    if not novo_produto or 'nome' not in novo_produto or 'preco' not in novo_produto or 'estoque' not in novo_produto:
-        return jsonify({'mensagem': 'Dados inválidos para o produto'}), 400
-    
-    novo_id = max([p['id'] for p in produtos]) + 1 if produtos else 1
-    produto = {
-        'id': novo_id,
-        'nome': novo_produto['nome'],
-        'preco': novo_produto['preco'],
-        'estoque': novo_produto['estoque']
+    if not request.json or not 'nome' in request.json or not 'preco' in request.json or not 'estoque' in request.json:
+        return jsonify({'erro': 'A requisição deve ser JSON e conter os campos: nome, preco, estoque.'}), 400
+    novo_produto = {
+        'id': produtos[-1]['id'] + 1 if produtos else 1,
+        'nome': request.json['nome'],
+        'preco': float(request.json['preco']),  # Converte para float
+        'estoque': int(request.json['estoque']) # Converte para int
     }
-    produtos.append(produto)
-    return jsonify(produto), 201
+    produtos.append(novo_produto)
+    return jsonify(novo_produto), 201
 
-# PUT /produtos/<id> - Atualizar um produto existente
-@app.route(
-    '/produtos/<int:id>',
-    methods=['PUT']
-)
-def atualizar_produto(id):
-    produto_atualizado = request.get_json()
-    if not produto_atualizado:
-        return jsonify({'mensagem': 'Dados inválidos para o produto'}), 400
+# Rota para atualizar um produto existente (PUT /produtos/<int:id>)
+@app.route('/produtos/<int:produto_id>', methods=['PUT'])
+def atualizar_produto(produto_id):
+    produto = next((p for p in produtos if p['id'] == produto_id), None)
+    if produto is None:
+        return jsonify({'erro': 'Produto não encontrado'}), 404
+    if not request.json:
+        return jsonify({'erro': 'A requisição deve ser JSON.'}), 400
+    produto['nome'] = request.json.get('nome', produto['nome'])
+    # Converte para float/int apenas se o campo estiver presente no JSON
+    if 'preco' in request.json:
+        produto['preco'] = float(request.json['preco'])
+    if 'estoque' in request.json:
+        produto['estoque'] = int(request.json['estoque'])
+    return jsonify(produto)
 
-    for i, produto in enumerate(produtos):
-        if produto['id'] == id:
-            produtos[i]['nome'] = produto_atualizado.get('nome', produtos[i]['nome'])
-            produtos[i]['preco'] = produto_atualizado.get('preco', produtos[i]['preco'])
-            produtos[i]['estoque'] = produto_atualizado.get('estoque', produtos[i]['estoque'])
-            return jsonify(produtos[i])
-    return jsonify({'mensagem': 'Produto não encontrado'}), 404
-
-# DELETE /produtos/<id> - Deletar um produto
-@app.route(
-    '/produtos/<int:id>',
-    methods=['DELETE']
-)
-def deletar_produto(id):
+# Rota para deletar um produto (DELETE /produtos/<int:id>)
+@app.route('/produtos/<int:produto_id>', methods=['DELETE'])
+def deletar_produto(produto_id):
     global produtos
-    produtos = [produto for produto in produtos if produto['id'] != id]
-    return jsonify({'mensagem': 'Produto deletado com sucesso'}), 200
+    produto = next((p for p in produtos if p['id'] == produto_id), None)
+    if produto is None:
+        return jsonify({'erro': 'Produto não encontrado'}), 404
+    produtos = [p for p in produtos if p['id'] != produto_id]
+    return jsonify({'resultado': 'Produto deletado com sucesso'})
+
+# Desafio Extra: Rota para simular a compra de uma unidade de um produto (POST /produtos/<int:id>/comprar)
+@app.route('/produtos/<int:produto_id>/comprar', methods=['POST'])
+def comprar_produto(produto_id):
+    produto = next((p for p in produtos if p['id'] == produto_id), None)
+    if produto is None:
+        return jsonify({'erro': 'Produto não encontrado'}), 404
+    if produto['estoque'] <= 0:
+        return jsonify({'erro': 'Produto fora de estoque'}), 400
+    produto['estoque'] -= 1 # Diminui o estoque em 1
+    return jsonify(produto), 200 # Retorna o produto atualizado
+
+# >>> Fim da Construção de Rotas <<<
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True)
